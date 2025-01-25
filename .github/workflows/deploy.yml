@@ -1,0 +1,42 @@
+name: Deploy to Netlify and Upload Sound Files
+
+on:
+  push:
+    branches:
+      - main  # 'main'ブランチにプッシュされたときに実行される
+
+jobs:
+  deploy_and_upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      # リポジトリをチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Node.jsをセットアップ（Node.jsが必要な場合）
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      # 必要な依存関係をインストール
+      - name: Install dependencies
+        run: npm install
+
+      # IBM Cloud SDK のインストール
+      - name: Install IBM COS SDK
+        run: npm install ibm-cos-sdk
+
+      # IBM Cloud への音声ファイルアップロード
+      - name: Upload sound files to IBM Cloud
+        run: |
+          node upload-sounds.js  # 音声ファイルアップロードの処理を記述したスクリプトを実行
+
+      # Netlifyにログイン
+      - name: Netlify Login
+        run: echo "${{ secrets.NETLIFY_AUTH_TOKEN }}" | netlify login --token
+
+      # Netlifyにデプロイ
+      - name: Deploy to Netlify
+        run: netlify deploy --prod --dir=build  # 'build' フォルダをデプロイ

@@ -1,0 +1,7 @@
+[build]
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[plugins]]
+package = "@netlify/plugin-ignore-files"
+inputs = { ignore = ["tensorflow/python/_pywrap_tensorflow_internal.pyd"] }
